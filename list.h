@@ -6,19 +6,19 @@
 #include <stdlib.h>
 #include <string>
 
-template<typename E>
-class Node
-{
-public:
-	E val;
-	Node *next;
- 	Node(E x) : val(x), next(NULL) {}
-};
-
 // not thread safe
 template<typename E>
 class List
 {
+protected:
+	class Node
+	{
+	public:
+		E val;
+		Node *next;
+	 	Node(E x) : val(x), next(NULL) {}
+	};
+
 public:
 	List()
 		: head(0)
@@ -40,7 +40,7 @@ public:
 
 	void add_tail(E val)
 	{
-		Node<E> *cur = new Node<E>(val);
+		Node *cur = new Node(val);
 		this->tail->next = cur;
 		this->tail = cur;
 	}
@@ -50,7 +50,7 @@ public:
 		if (this->tail == &this->head)
 			return false;
 
-		Node<E> *cur;
+		Node *cur;
 		cur = this->head.next;
 		if (cur->next)
 		{
@@ -72,8 +72,8 @@ public:
 	}
 
 private:
-	Node<E> head;
-	Node<E> *tail;
+	Node head;
+	Node *tail;
 };
 
 #endif
