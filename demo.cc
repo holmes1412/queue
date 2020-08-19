@@ -5,12 +5,25 @@
 #include "basic_queue.h"
 #include "double_list_queue.h"
 #include "double_lock_queue.h"
+#include "mpmc_queue.h"
+#include "example.thread.h"
 
-typedef DoubleLockQueue Queue;
+//typedef DoubleLockQueue Queue;
+//typedef DoubleListQueue<int> Queue;
+//typedef BasicQueue<int> Queue;
+//typedef GrpcMpmcQueue Queue;
+typedef MpmcQueue Queue;
+//typedef threadsafe_queue<int> Queue;
+
+#define PRODUCER_NTHREADS 10
+#define CONSUMER_NTHREADS 10
+#define QUEUE_MAX         4096000
+#define BATCH_NUM         1000000
 
 struct thread_info_t
 {
     pthread_t tid;
+	int threadid;
     Queue *queue;
 	int begin;
 	int end;
@@ -26,9 +39,11 @@ static void *producer_routine(void *data)
 	for (int i = begin; i < end; i++)
 	{
 		queue->enqueue(i);
-		fprintf(stderr, "thread-%d enqueue(%d), size = %d\n",
-				info->tid, i, queue->size());
+//		fprintf(stderr, "[%d] enqueue(%d), size = %d\n",
+//				info->threadid, i, queue->size());
 	}
+	fprintf(stderr, "producer-%d finish. thread-%zu size = %d\n",
+			info->threadid, info->tid, queue->size());
 }
 
 static void *consumer_routine(void *data)
@@ -42,23 +57,29 @@ static void *consumer_routine(void *data)
 	for (int i = begin; i < end; i++)
 	{
 		ret = queue->dequeue();
-		fprintf(stderr, "thread-%d dequeue()=%d, size = %d\n",
-				info->tid, ret, queue->size());
+//		if (ret > BATCH_NUM)
+//		fprintf(stderr, "[%d] dequeue()=%d, size = %d\n",
+//				info->threadid, ret, queue->size());
 	}
+	fprintf(stderr, "consumer-%d finish. thread-%zu size = %d\n",
+			info->threadid, info->tid, queue->size());
 }
+
 int main(int argc, char *argv[])
 {
-	int producer_nthreads = 10;
-	int consumer_nthreads = 10;
-	int queue_max = 6;
-	int batch = 1000;
+	int producer_nthreads = PRODUCER_NTHREADS;
+	int consumer_nthreads = CONSUMER_NTHREADS;
+	int queue_max = QUEUE_MAX;
+	int batch_num = BATCH_NUM;
 	int ret;
 
-	if (argc == 2 || argc > 4)
+	if (argc == 2 || argc > 5)
 	{
 		fprintf(stderr, "Usage: %s [producer_nthreads] [consumer_nthreads] \
-				[queue_max]\n\tDefault: producer_nthreads = 10, \
-				consumer_nthreads = 10, queue_max = 1024\n", argv[0]);
+				[queue_max]\n\tDefault: producer_nthreads = %d, \
+				consumer_nthreads = %d, queue_max = %d, batch_num = %d\n",
+				argv[0],
+				PRODUCER_NTHREADS, CONSUMER_NTHREADS, QUEUE_MAX, BATCH_NUM);
 		return 0;
 	}
 
@@ -71,7 +92,11 @@ int main(int argc, char *argv[])
 	if (argc > 3)
 		queue_max = atoi(argv[2]);
 
-	if (producer_nthreads < 0 || consumer_nthreads < 0 || queue_max < 0)
+	if (argc > 4)
+		batch_num = atoi(argv[3]);
+
+	if (producer_nthreads < 0 || consumer_nthreads < 0 ||
+		queue_max < 0 || batch_num <= 0)
 	{
 		fprintf(stderr, "Invalid parameters.\n");
 		return 0;
@@ -95,9 +120,10 @@ int main(int argc, char *argv[])
 
 	for (int i = 0; i < producer_nthreads; i++)
 	{
+		producer[i].threadid = i;
 		producer[i].queue = &queue;
-		producer[i].begin = i * (batch / producer_nthreads);
-		producer[i].end = (i + 1) * (batch / producer_nthreads);
+		producer[i].begin = i * (batch_num / producer_nthreads);
+		producer[i].end = (i + 1) * (batch_num / producer_nthreads);
 		ret = pthread_create(&producer[i].tid, NULL, producer_routine,
 							 &producer[i]);
 		if (ret)
@@ -109,9 +135,10 @@ int main(int argc, char *argv[])
 
 	for (int i = 0; i < consumer_nthreads; i++)
 	{
+		consumer[i].threadid = i;
 		consumer[i].queue = &queue;
-		consumer[i].begin = i * (batch / consumer_nthreads);
-		consumer[i].end = (i + 1) * (batch / consumer_nthreads);
+		consumer[i].begin = i * (batch_num / consumer_nthreads);
+		consumer[i].end = (i + 1) * (batch_num / consumer_nthreads);
 		ret = pthread_create(&consumer[i].tid, NULL, consumer_routine, &consumer[i]);
 		if (ret)
 		{
@@ -140,8 +167,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	//check
-	fprintf(stderr, "End and queue.size() == %d\n", queue.size());
+	fprintf(stderr, "End and check queue.size() == %d\n", queue.size());
 
 	free(consumer);
 	free(producer);

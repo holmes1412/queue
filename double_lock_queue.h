@@ -20,7 +20,6 @@ public:
 	{
 		int cnt;
 		pthread_mutex_lock(&this->put_mutex);
-		// why >= ? in google it is ==
 		while (this->res_cnt >= this->res_max)
 			pthread_cond_wait(&this->put_cond, &this->put_mutex);
 
@@ -46,8 +45,8 @@ public:
 			pthread_mutex_unlock(&this->get_mutex);
 		}
 		__sync_add_and_fetch(&this->queue_cnt, 1);
-		printf("enqueue(%d) and size=%d res_cnt=%d\n",
-				element, this->size(), this->res_cnt);
+//		printf("enqueue(%d) and size=%d res_cnt=%d\n",
+//				element, this->size(), this->res_cnt);
 	}
 
 	int dequeue()
@@ -82,8 +81,8 @@ public:
 			pthread_mutex_unlock(&this->put_mutex);
 		}
 		__sync_sub_and_fetch(&this->queue_cnt, 1);
-		printf("dequeue()=%d and size=%d res_cnt=%d\n",
-				ret, this->size(), this->res_cnt);
+//		printf("dequeue()=%d and size=%d res_cnt=%d\n",
+//				ret, this->size(), this->res_cnt);
 		return ret;
 	}
 

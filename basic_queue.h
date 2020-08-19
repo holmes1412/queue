@@ -8,6 +8,7 @@
 
 #include "list.h"
 
+template<typename T>
 class BasicQueue
 {
 public:
@@ -18,7 +19,7 @@ public:
 		this->put_wait_cnt = 0;
 	}
 
-	void enqueue(int element)
+	void enqueue(T element)
 	{
 		pthread_mutex_lock(&this->mutex);
 		while (this->res_cnt >= this->res_max)
@@ -31,30 +32,28 @@ public:
 		this->res_list.add_tail(element);
 		this->res_cnt++;
 
+//		if (this->res_cnt == 1)
 		pthread_mutex_unlock(&this->mutex);
 		pthread_cond_signal(&this->get_cond);
 	}
 
-	int dequeue()
+	T dequeue()
 	{
 		int ret;
 
 		pthread_mutex_lock(&this->mutex);
-		while (this->res_cnt == 0 && this->res_list.empty())
+		while (this->res_cnt == 0)// && this->res_list.empty())
 			pthread_cond_wait(&this->get_cond, &this->mutex);
 
 		if (this->res_cnt != 0)
 		{
 			this->res_list.get_head(ret);
 			this->res_cnt--;
-
-			if (this->put_wait_cnt > 0)
+//			if (this->put_wait_cnt > 0)
 				pthread_cond_signal(&this->put_cond);
-//	  } else {
 		}
 
 		pthread_mutex_unlock(&this->mutex);
-
 		return ret;
 	}
 
@@ -68,7 +67,7 @@ private:
 	int res_cnt;
 	int put_wait_cnt;
 
-	List<int> res_list;
+	List<T> res_list;
 
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_cond_t put_cond = PTHREAD_COND_INITIALIZER;

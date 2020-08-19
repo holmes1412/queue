@@ -9,17 +9,18 @@
 
 #include "list.h"
 
-class OutListQueue
+template<typename T>
+class DoubleListQueue
 {
 public:
-	OutListQueue(int capacity)
+	DoubleListQueue(int capacity)
 	{
 		this->res_max = capacity;
 		this->put_res_cnt = 0;
 		this->get_res_cnt = 0;
 	}
 
-	void enqueue(int element)
+	void enqueue(T element)
 	{
 
 		pthread_mutex_lock(&this->put_mutex);
@@ -34,9 +35,9 @@ public:
 		pthread_cond_signal(&this->get_cond);
 	}
 
-	int dequeue()
+	T dequeue()
 	{
-		int ret;
+		T ret;
 
 		pthread_mutex_lock(&this->get_mutex);
 
@@ -52,10 +53,8 @@ public:
 		return ret;
 	}
 
-
 	int swap_list()
 	{
-		int ret;
 		pthread_mutex_lock(&this->put_mutex);
 
 		while (this->put_res_cnt == 0)
