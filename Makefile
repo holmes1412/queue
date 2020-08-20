@@ -1,5 +1,5 @@
 CXX=g++
-CFLAGS=-g -std=c++11 -Wall
+CXXFLAGS=-g -std=c++11 -Wall -O2
 TARGET=demo
 
 SRCS=$(wildcard *.cc)
@@ -17,10 +17,10 @@ GRPC = -lgrpc_abseil -lgrpc
 all:$(TARGET)
 
 %.o:%.cc
-	$(CXX) $(CFLAGS) -c $< $(INCLUDES)
+	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES)
 
 $(TARGET):$(OBJS)
-	$(CXX) $(CFLAGS) -o $@ $^ $(INCLUDES) $(LIST_INCLUDES) $(LIBS) -lpthread -ljemalloc $(GRPC)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(INCLUDES) $(LIST_INCLUDES) $(LIBS) -lpthread -ljemalloc $(GRPC)
 
 clean:
 	rm -rf $(TARGET) *.o

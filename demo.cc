@@ -9,10 +9,10 @@
 #include "example.thread.h"
 
 //typedef DoubleLockQueue Queue;
-//typedef DoubleListQueue<int> Queue;
+typedef DoubleListQueue<int> Queue;
 //typedef BasicQueue<int> Queue;
 //typedef GrpcMpmcQueue Queue;
-typedef MpmcQueue Queue;
+//typedef MpmcQueue Queue;
 //typedef threadsafe_queue<int> Queue;
 
 #define PRODUCER_NTHREADS 10
@@ -42,8 +42,8 @@ static void *producer_routine(void *data)
 //		fprintf(stderr, "[%d] enqueue(%d), size = %d\n",
 //				info->threadid, i, queue->size());
 	}
-	fprintf(stderr, "producer-%d finish. thread-%zu size = %d\n",
-			info->threadid, info->tid, queue->size());
+//	fprintf(stderr, "producer-%d finish. thread-%zu size = %d\n",
+//			info->threadid, info->tid, queue->size());
 }
 
 static void *consumer_routine(void *data)
@@ -61,8 +61,8 @@ static void *consumer_routine(void *data)
 //		fprintf(stderr, "[%d] dequeue()=%d, size = %d\n",
 //				info->threadid, ret, queue->size());
 	}
-	fprintf(stderr, "consumer-%d finish. thread-%zu size = %d\n",
-			info->threadid, info->tid, queue->size());
+//	fprintf(stderr, "consumer-%d finish. thread-%zu size = %d\n",
+//			info->threadid, info->tid, queue->size());
 }
 
 int main(int argc, char *argv[])
