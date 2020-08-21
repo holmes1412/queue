@@ -37,7 +37,7 @@ public:
 	int size()
 	{
 		return this->queue.count();
-		return this->res_cnt;
+		//return this->res_cnt;
 	}
 private:
 	int res_max;
