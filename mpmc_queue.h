@@ -19,12 +19,19 @@ public:
 
 	void enqueue(int element)
 	{
-		this->queue.Put((void *)((unsigned long long)element));
+		void *tmp = malloc(sizeof(int));
+		memcpy(tmp, &element, sizeof(int));
+		this->queue.Put(tmp);
+		//this->queue.Put((void *)((unsigned long long)element));
 	}
 
 	int dequeue()
 	{
-		return (int)reinterpret_cast<unsigned long long>(this->queue.Get());
+		void *tmp = this->queue.Get();
+		int ret = *(int *)tmp;
+		delete tmp;
+		return ret;
+//		return (int)reinterpret_cast<unsigned long long>(this->queue.Get());
 	}
 
 	int size()
