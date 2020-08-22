@@ -7,18 +7,20 @@
 #include "double_lock_queue.h"
 #include "mpmc_queue.h"
 #include "example.thread.h"
+#include "double_list_mpmc_queue.h"
 
 //typedef DoubleLockQueue Queue;
-//typedef DoubleListQueue<int> Queue;
+typedef DoubleListQueue<int> Queue;
 //typedef BasicQueue<int> Queue;
-typedef GrpcMpmcQueue Queue;
+//typedef GrpcMpmcQueue Queue;
 //typedef MpmcQueue Queue;
 //typedef threadsafe_queue<int> Queue;
+//typedef DoubleListMpmcQueue<int> Queue;
 
 #define PRODUCER_NTHREADS 10
 #define CONSUMER_NTHREADS 10
-#define QUEUE_MAX         4096000
-#define BATCH_NUM         10000
+#define QUEUE_MAX         4096
+#define BATCH_NUM         1000000
 
 struct thread_info_t
 {
@@ -39,8 +41,8 @@ static void *producer_routine(void *data)
 	for (int i = begin; i < end; i++)
 	{
 		queue->enqueue(i);
-		fprintf(stderr, "[%d] enqueue(%d), size = %d\n",
-				info->threadid, i, queue->size());
+//		fprintf(stderr, "[%d] enqueue(%d), size = %d\n",
+//				info->threadid, i, queue->size());
 	}
 	fprintf(stderr, "producer-%d finish. thread-%zu size = %d\n",
 			info->threadid, info->tid, queue->size());
@@ -57,9 +59,9 @@ static void *consumer_routine(void *data)
 	for (int i = begin; i < end; i++)
 	{
 		ret = queue->dequeue();
-		if (ret > BATCH_NUM)
-		fprintf(stderr, "[%d] dequeue()=%d, size = %d\n",
-				info->threadid, ret, queue->size());
+//		if (ret > BATCH_NUM)
+//		fprintf(stderr, "[%d] dequeue()=%d, size = %d\n",
+//				info->threadid, ret, queue->size());
 	}
 	fprintf(stderr, "consumer-%d finish. thread-%zu size = %d\n",
 			info->threadid, info->tid, queue->size());

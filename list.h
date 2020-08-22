@@ -68,7 +68,7 @@ public:
 
 	bool empty()
 	{
-		return !(this->tail == &this->head);
+		return (this->tail == &this->head);
 	}
 
 private:

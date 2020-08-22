@@ -101,7 +101,7 @@ private:
 	pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 };
 
-////////impl
+//////// impl
 
 inline void MpmcQueue::enqueue_basic(int element)
 {
@@ -109,7 +109,7 @@ inline void MpmcQueue::enqueue_basic(int element)
 	struct list_head *pos;
 
 	pthread_mutex_lock(&this->mutex);
-	while (this->res_cnt > this->res_max - 1)// && !poller->stopping)
+	while (this->res_cnt > this->res_max - 1)
 		pthread_cond_wait(&this->cond, &this->mutex);
 
 	this->res_list.add_tail(element);
@@ -133,7 +133,7 @@ inline int MpmcQueue::dequeue_basic()
 {
 	int ret;
 	pthread_mutex_lock(&this->mutex);
-	if (this->res_cnt == 0)// && !queue->nonblock)
+	if (this->res_cnt == 0)
 	{
 
 		struct __poller_queue_waiter waiter = {

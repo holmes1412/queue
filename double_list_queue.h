@@ -1,5 +1,5 @@
-#ifndef __OUT_LIST_QUEUE__
-#define __OUT_LIST_QUEUE__
+#ifndef __DOUBLE_LIST_QUEUE__
+#define __DOUBLE_LIST_QUEUE__
 
 #include <stdio.h>
 #include <pthread.h>
@@ -41,7 +41,7 @@ public:
 
 		pthread_mutex_lock(&this->get_mutex);
 
-		if (this->get_list.empty() || this->swap_list() > 0)
+		if (!this->get_list.empty() || this->swap_list() > 0)
 		{
 			
 			this->get_list.get_head(ret);
@@ -82,8 +82,8 @@ public:
 private:
 	int res_max;
 
-	List<int> put_list;
-	List<int> get_list;
+	List<T> put_list;
+	List<T> get_list;
 
 	int put_res_cnt;
 	int get_res_cnt;

@@ -33,8 +33,8 @@ public:
 		this->res_cnt++;
 
 //		if (this->res_cnt == 1)
-		pthread_mutex_unlock(&this->mutex);
 		pthread_cond_signal(&this->get_cond);
+		pthread_mutex_unlock(&this->mutex);
 	}
 
 	T dequeue()
@@ -50,11 +50,11 @@ public:
 			this->res_list.get_head(ret);
 			this->res_cnt--;
 //			if (this->put_wait_cnt > 0)
-//				pthread_cond_signal(&this->put_cond);
+				pthread_cond_signal(&this->put_cond);
 		}
 
 		pthread_mutex_unlock(&this->mutex);
-		pthread_cond_signal(&this->put_cond);
+//		pthread_cond_signal(&this->put_cond);
 		return ret;
 	}
 
