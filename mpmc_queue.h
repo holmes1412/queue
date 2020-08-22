@@ -29,7 +29,7 @@ public:
 	{
 		void *tmp = this->queue.Get();
 		int ret = *(int *)tmp;
-		delete tmp;
+		free(tmp);
 		return ret;
 //		return (int)reinterpret_cast<unsigned long long>(this->queue.Get());
 	}
@@ -37,7 +37,7 @@ public:
 	int size()
 	{
 		return this->queue.count();
-		return this->res_cnt;
+		//return this->res_cnt;
 	}
 private:
 	int res_max;
