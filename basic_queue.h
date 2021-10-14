@@ -39,7 +39,7 @@ public:
 
 	T dequeue()
 	{
-		int ret;
+		T ret;
 
 		pthread_mutex_lock(&this->mutex);
 		while (this->res_cnt == 0)// && this->res_list.empty())
