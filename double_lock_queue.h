@@ -36,7 +36,7 @@ public:
 		pthread_mutex_unlock(&this->put_mutex);
 
 		// before i add this, it`s empty and some one may be waiting for get_cond
-		//	signalNotEmpty();
+		// signalNotEmpty();
 		if (cnt == 0)
 		{
 			// why i must lock get_mutex
@@ -54,13 +54,13 @@ public:
 		int ret;
 		int cnt;
 
-        pthread_mutex_lock(&this->get_mutex);
-        while (this->res_cnt == 0)// && this->list.empty())
-            pthread_cond_wait(&this->get_cond, &this->get_mutex);
+		pthread_mutex_lock(&this->get_mutex);
+		while (this->res_cnt == 0)// && this->list.empty())
+			pthread_cond_wait(&this->get_cond, &this->get_mutex);
 
 		// don`t know whether this is necessary
-        if (this->res_cnt != 0)
-        {
+		if (this->res_cnt != 0)
+		{
 			this->list.get_head(ret);
 			cnt = __sync_fetch_and_sub(&this->res_cnt, 1);
 
@@ -68,9 +68,9 @@ public:
 			if (cnt > 1)
 				pthread_cond_signal(&this->get_cond);
 
-//      } else {
-            // this should not happen depend in this leetcode
-        }
+//		} else {
+			// this should not happen depend in this leetcode
+		}
 
 		pthread_mutex_unlock(&this->get_mutex);
 		// just now i took and make one extra space
