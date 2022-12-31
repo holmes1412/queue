@@ -19,6 +19,8 @@
 
 [消息队列优化 -- grpc MPMCQueue 简介及各队列性能对比](https://zhuanlan.zhihu.com/p/196788873)
 
+[消息队列新实现 -- Workflow msgqueue代码详解](https://zhuanlan.zhihu.com/p/525985268)
+
 鶸鶸的我也会持续学习和改进～本demo也会持续更新～
 
 ## 一个简单的对比图
